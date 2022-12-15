@@ -44,7 +44,7 @@ def mainmenu():
 
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     
-    pygame.display.set_caption('BTS FIND')
+    pygame.display.set_caption('BTS MATCH GAME')
     pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
     
     backImg = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
@@ -83,8 +83,8 @@ def main():
 
     mouse_x = 0
     mouse_y = 0
-    pygame.display.set_caption('BTS FIND')
-    pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
+    # pygame.display.set_caption('BTS MATCH GAME')
+    # pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
     mainBoard = getRandomizedBoard() # 8개의 사진이름들을 불러와 각 사진들을 두 개씩 만들고, 이를 섞어서 4x4 리스트를 만듦
     revealedBoxes = generateRevealedBoxesData(False) # False(닫힌 형태)로 채워진 4x4 리스트 생성
 
