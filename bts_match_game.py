@@ -1,8 +1,7 @@
 #%%
-import random, pygame, sys, cx_Freeze
-from PIL import Image
+import random, pygame, sys
+# from PIL import Image
 from pygame.locals import *
-from multiprocessing import Queue
 import time
 
 FPS = 30
@@ -74,7 +73,7 @@ def main():
     global FPSCLOCK, DISPLAYSURF, BOARDWIDTH, BOARDHEIGHT
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load(r"C:\sbbigdata\Find_the_same_picture\data\fire.wav")
+    pygame.mixer.music.load(r"data\fire.wav")
     pygame.mixer.music.play(-5,0.0)
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -147,6 +146,8 @@ def main():
                         pygame.time.wait(1000)
 
                         # 상자들을 다시 섞고 전체가 닫힌 상자 리스트를 다시 만듦.
+                        pygame.mixer.music.load(r"data\fire.wav")
+                        pygame.mixer.music.play(-5,0.0)     
                         mainBoard = getRandomizedBoard()
                         revealedBoxes = generateRevealedBoxesData(False)
 
