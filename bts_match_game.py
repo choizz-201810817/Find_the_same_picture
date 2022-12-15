@@ -13,8 +13,9 @@ BOXSIZE = 100
 GAPSIZE = 10
 BOARDWIDTH = 4
 BOARDHEIGHT = 4
-BGCOLOR = (173,114,254)
-BOXCOLOR = (43, 17, 142)
+BGCOLOR = (121,80,178)
+LIGHTBGCOLOR = (173,114,254)
+BOXCOLOR = (43,17,142)
 HIGHLIGHTCOLOR = (255,255,255)
 
 assert (BOARDWIDTH * BOARDWIDTH) % 2 == 0, '이미지 개수가 짝수'
@@ -45,14 +46,14 @@ def mainmenu():
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     
     pygame.display.set_caption('BTS MATCH GAME')
-    pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
+    pygame.display.set_icon(pygame.image.load(r'data\img\bts_logo.png'))
     
-    backImg = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
-    main_pic = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\main_img.png')
-    mainmenu_start = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\start.png")
-    mainmenu_finish = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\finish.png")
-    mainmenu_start_click = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\start_click.png")
-    mainmenu_finish_click = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\finish_click.png")
+    backImg = pygame.image.load(r'data\img\purple_back.png')
+    main_pic = pygame.image.load(r'data\img\main_img.png')
+    mainmenu_start = pygame.image.load(r"data\img\start.png")
+    mainmenu_finish = pygame.image.load(r"data\img\finish.png")
+    mainmenu_start_click = pygame.image.load(r"data\img\start_click.png")
+    mainmenu_finish_click = pygame.image.load(r"data\img\finish_click.png")
     
     menu = True
 
@@ -84,11 +85,11 @@ def main():
     mouse_x = 0
     mouse_y = 0
     # pygame.display.set_caption('BTS MATCH GAME')
-    # pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
+    # pygame.display.set_icon(pygame.image.load(r'data\img\bts_logo.png'))
     mainBoard = getRandomizedBoard() # 8개의 사진이름들을 불러와 각 사진들을 두 개씩 만들고, 이를 섞어서 4x4 리스트를 만듦
     revealedBoxes = generateRevealedBoxesData(False) # False(닫힌 형태)로 채워진 4x4 리스트 생성
 
-    backImg = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
+    backImg = pygame.image.load(r'data\img\purple_back.png')
 
     firstSelection = None # 두 번의 클릭 중에 첫 클릭 좌표 저장하는 변수
     DISPLAYSURF.blit(backImg, (0,0))
@@ -99,7 +100,7 @@ def main():
         millis=ticks%1000
         seconds=int(ticks/1000 % 60)
         minutes=int(ticks/60000 % 24)
-        out='{0} : {1}'.format(minutes, seconds)
+        out='{0:02d} : {1:02d}'.format(minutes, seconds)
         timer = font.render(out, True, (255,255,255))
         
         mouseClicked = False
@@ -107,7 +108,7 @@ def main():
         DISPLAYSURF.blit(backImg, (0,0)) # 베걍화면 설정
         drawBoard(mainBoard, revealedBoxes) # 4x4 의 자리에 각각의 사진을 배치함
 
-        DISPLAYSURF.blit(timer, (((WINDOWWIDTH/2) - 30), 10))
+        DISPLAYSURF.blit(timer, (((WINDOWWIDTH/2) - 50), 10))
         pygame.display.flip()
 
         for event in pygame.event.get(): # 마우스 / 키보드 입력을 받음
@@ -229,14 +230,14 @@ def getBoxAtPixel(x, y): # x, y는 마우스 클릭 좌표
 def drawCard(pic, num, boxx, boxy):
     left, top = leftTopCoordsOfBox(boxx, boxy)
 
-    pic1 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts1.jpg')
-    pic2 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts2.jpg')
-    pic3 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts3.jpg')
-    pic4 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts4.jpg')
-    pic5 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts5.jpg')
-    pic6 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts6.jpg')
-    pic7 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts7.jpg')
-    pic8 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts8.jpg')
+    pic1 = pygame.image.load(r'data\img\bts1.jpg')
+    pic2 = pygame.image.load(r'data\img\bts2.jpg')
+    pic3 = pygame.image.load(r'data\img\bts3.jpg')
+    pic4 = pygame.image.load(r'data\img\bts4.jpg')
+    pic5 = pygame.image.load(r'data\img\bts5.jpg')
+    pic6 = pygame.image.load(r'data\img\bts6.jpg')
+    pic7 = pygame.image.load(r'data\img\bts7.jpg')
+    pic8 = pygame.image.load(r'data\img\bts8.jpg')
 
     if pic == 'bts':
         DISPLAYSURF.blit(pic1, (left, top))
@@ -318,18 +319,26 @@ def startGameAnimation(board):
 
 # 게임에서 이겼을 때..
 def gameWonAnimation(board):
-    coveredBoxes = generateRevealedBoxesData(True)
-    global BOXSIZE
-    w = 800
-    h = 600
-    size = (w, h)
+    # 승리하면 배경색을 깜빡인다
+    # coveredBoxes = generateRevealedBoxesData(True)
+    w=800
+    h=600
+    size=(w, h)
+    
+    endImg1=pygame.image.load(r'data\img\bts_logo_bg.png')
+    endImg2=pygame.image.load(r'data\img\bts_logo_bg2.png')
+    
+    screen = pygame.display.set_mode(size)
+    pygame.mixer.music.fadeout(10)
 
-    pic0 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\stars.png')
-
-
-    # screen = pygame.display.set_mode(size)
-    # color1 = LIGHTBGCOLOR
-    # color2 = BGCOLOR
+    for i in range(10):
+        DISPLAYSURF.fill(BGCOLOR)
+        screen.blit(endImg1,(0,0))
+        pygame.display.flip()
+        pygame.time.wait(200)
+        screen.blit(endImg2,(0,0))
+        pygame.display.flip()
+        pygame.time.wait(300)
 
 def finishgame():
     pygame.quit()
