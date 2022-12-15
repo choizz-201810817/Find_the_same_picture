@@ -27,6 +27,8 @@ def main():
     global FPSCLOCK, DISPLAYSURF
     pygame.init()
     pygame.mixer.init()
+    pygame.mixer.music.load(r"C:\sbbigdata\Find_the_same_picture\data\fire.wav")
+    pygame.mixer.music.play(-5,0.0)
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 
