@@ -20,7 +20,7 @@ assert (BOARDWIDTH * BOARDWIDTH) % 2 == 0, '이미지 개수가 짝수'
 XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * (BOXSIZE + GAPSIZE)))/2)
 YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * (BOXSIZE + GAPSIZE)))/2)
 
-pics = ['avatar', 'avengers','harrypotter','interstellar', 'jurassik', 'myeongnyang', 'spyderman', 'titanic']
+pics = ['bts', 'rm', 'jin', 'suga', 'jhope', 'jimin', 'v', 'jk']
 
 # %%
 def main():
@@ -30,24 +30,37 @@ def main():
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 
+    font = pygame.font.Font(None, 40)
+    
+
     mouse_x = 0
     mouse_y = 0
-    pygame.display.set_caption('BTS ')
-    pygame.display.set_icon(pygame.image.load('data\img\movie_icon.png'))
+    pygame.display.set_caption('BTS FIND')
+    pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
     mainBoard = getRandomizedBoard() # 8개의 사진이름들을 불러와 각 사진들을 두 개씩 만들고, 이를 섞어서 4x4 리스트를 만듦
     revealedBoxes = generateRevealedBoxesData(False) # False(닫힌 형태)로 채워진 4x4 리스트 생성
 
-    backImg = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
+    backImg = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
 
     firstSelection = None # 두 번의 클릭 중에 첫 클릭 좌표 저장하는 변수
     DISPLAYSURF.blit(backImg, (0,0))
     startGameAnimation(mainBoard)
 
     while True:
+        ticks = pygame.time.get_ticks()
+        millis=ticks%1000
+        seconds=int(ticks/1000 % 60)
+        minutes=int(ticks/60000 % 24)
+        out='{0} : {1}'.format(minutes, seconds)
+        timer = font.render(out, True, (255,255,255))
+        
         mouseClicked = False
 
         DISPLAYSURF.blit(backImg, (0,0)) # 베걍화면 설정
         drawBoard(mainBoard, revealedBoxes) # 4x4 의 자리에 각각의 사진을 배치함
+
+        DISPLAYSURF.blit(timer, (((WINDOWWIDTH/2) - 30), 10))
+        pygame.display.flip()
 
         for event in pygame.event.get(): # 마우스 / 키보드 입력을 받음
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -96,6 +109,7 @@ def main():
                         # pygame.mixer.music.play(-5,0.0)
 
                     firstSelection = None
+
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -162,36 +176,32 @@ def getBoxAtPixel(x, y): # x, y는 마우스 클릭 좌표
 
 # pic에 해당하는 사진을 boxx, boxy 자리에 배치
 def drawCard(pic, num, boxx, boxy):
-    quarter = int(BOXSIZE * 0.25)
-    half = int(BOXSIZE * 0.5)
-    eight = int(BOXSIZE * 0.125)
-
     left, top = leftTopCoordsOfBox(boxx, boxy)
 
-    pic1 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_avatar.png')
-    pic2 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_avengers.png')
-    pic3 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_harrypotter.png')
-    pic4 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_interstellar.png')
-    pic5 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_jurassik.png')
-    pic6 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_myeongnyang.png')
-    pic7 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_spyderman.png')
-    pic8 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\poster_titanic.png')
+    pic1 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts1.jpg')
+    pic2 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts2.jpg')
+    pic3 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts3.jpg')
+    pic4 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts4.jpg')
+    pic5 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts5.jpg')
+    pic6 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts6.jpg')
+    pic7 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts7.jpg')
+    pic8 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts8.jpg')
 
-    if pic == 'avatar':
+    if pic == 'bts':
         DISPLAYSURF.blit(pic1, (left, top))
-    elif pic == 'avengers':
+    elif pic == 'rm':
         DISPLAYSURF.blit(pic2, (left, top))
-    elif pic == 'harrypotter':
+    elif pic == 'jin':
         DISPLAYSURF.blit(pic3, (left, top))
-    elif pic == 'interstellar':
+    elif pic == 'suga':
         DISPLAYSURF.blit(pic4, (left, top))
-    elif pic == 'jurassik':
+    elif pic == 'jhope':
         DISPLAYSURF.blit(pic5, (left, top))
-    elif pic == 'myeongnyang':
+    elif pic == 'jmin':
         DISPLAYSURF.blit(pic6, (left, top))
-    elif pic == 'spyderman':
+    elif pic == 'v':
         DISPLAYSURF.blit(pic7, (left, top))
-    elif pic == 'titanic':
+    elif pic == 'jk':
         DISPLAYSURF.blit(pic8, (left, top))
 
 def getPicAndNum(board, boxx, boxy):
@@ -263,7 +273,7 @@ def gameWonAnimation(board):
     h = 600
     size = (w, h)
 
-    pic0 = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\stars.png')
+    pic0 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\stars.png')
 
     screen = pygame.display.set_mode(size)
     # color1 = LIGHTBGCOLOR
