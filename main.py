@@ -7,7 +7,7 @@ from multiprocessing import Queue
 FPS = 30
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 600
-REVEALSPEED = 8
+REVEALSPEED = 10
 BOXSIZE = 100
 GAPSIZE = 10
 BOARDWIDTH = 4
@@ -34,54 +34,57 @@ def main():
     mouse_y = 0
     pygame.display.set_caption('BTS ')
     pygame.display.set_icon(pygame.image.load('data\img\movie_icon.png'))
-    mainBoard = getRandomizedBoard()
-    revealedBoxes = generateRevealedBoxesData(False)
+    mainBoard = getRandomizedBoard() # 8개의 사진이름들을 불러와 각 사진들을 두 개씩 만들고, 이를 섞어서 4x4 리스트를 만듦
+    revealedBoxes = generateRevealedBoxesData(False) # False(닫힌 형태)로 채워진 4x4 리스트 생성
 
     backImg = pygame.image.load('C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
 
-    firstSelection = None # 첫 클릭 좌표 저장
+    firstSelection = None # 두 번의 클릭 중에 첫 클릭 좌표 저장하는 변수
     DISPLAYSURF.blit(backImg, (0,0))
     startGameAnimation(mainBoard)
 
     while True:
         mouseClicked = False
 
-        DISPLAYSURF.blit(backImg, (0,0))
-        drawBoard(mainBoard, revealedBoxes)
+        DISPLAYSURF.blit(backImg, (0,0)) # 베걍화면 설정
+        drawBoard(mainBoard, revealedBoxes) # 4x4 의 자리에 각각의 사진을 배치함
 
-        for event in pygame.event.get():
-            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+        for event in pygame.event.get(): # 마우스 / 키보드 입력을 받음
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
-            elif event.type == MOUSEMOTION:
+            elif event.type == MOUSEMOTION: # 마우스 위치 이동
                 mouse_x, mouse_y = event.pos
-            elif event.type == MOUSEBUTTONUP:
+            elif event.type == MOUSEBUTTONDOWN: # 마우스 클릭
                 mouse_x, mouse_y = event.pos
                 mouseClicked = True
 
-        boxx, boxy = getBoxAtPixel(mouse_x, mouse_y)
-        if boxx != None and boxy != None:
-            if not revealedBoxes[boxx][boxy]:
+        boxx, boxy = getBoxAtPixel(mouse_x, mouse_y) # 마우스 좌표에 해당하는 박스 인덱스 가져오기
+        if boxx != None and boxy != None: # (boxx, boxy)의 값이 존재(마우스 위치에 해당하는 상자가 있는 경우)
+            if not revealedBoxes[boxx][boxy]: # 마우스 갖다 댄 상자에 하이라이트 생성
                 drawHighlightBox(boxx, boxy)
-            if not revealedBoxes[boxx][boxy] and mouseClicked:
-                revealBoxesAnimation(mainBoard, [(boxx, boxy)])
-                revealedBoxes[boxx][boxy] = True
-                if firstSelection == None:
-                    firstSelection = (boxx, boxy)
-                else:
+            if not revealedBoxes[boxx][boxy] and mouseClicked: # 마우스 위치의 박스를 눌렀을 때
+                revealBoxesAnimation(mainBoard, [(boxx, boxy)]) # 마우스가 누른 박스의 커버 열기
+                revealedBoxes[boxx][boxy] = True # 해당 박스 커버가 열려있다고 표시
+                if firstSelection == None: # 처음 클릭이 진행되지 않은 경우
+                    firstSelection = (boxx, boxy) # 클릭된 상자 위치 저장
+                else: # 처음 클릭된 상자가 있는 경우
                     icon1shape, icon1color = getPicAndNum(mainBoard, firstSelection[0], firstSelection[1])
                     icon2shape, icon2color = getPicAndNum(mainBoard, boxx, boxy)
-                    if icon1shape != icon2shape or icon1color != icon2color:
+                    if icon1shape != icon2shape or icon1color != icon2color: # 클릭된 두 상자가 다르다면..
                         # 둘이 다르면 모두 닫음
-                        pygame.time.wait(1000)
-                        coverBoxesAnimation(mainBoard, [(firstSelection[0], firstSelection[1]), (boxx, boxy)])
+                        pygame.time.wait(800)
+                        coverBoxesAnimation(mainBoard, [(firstSelection[0], firstSelection[1]), (boxx, boxy)]) # 처음 선택 상자와 두번째 선택 상자의 커버를 닫음
                         revealedBoxes[firstSelection[0]][firstSelection[1]] = False
                         revealedBoxes[boxx][boxy] = False
+                        # 두 상자 모두 닫힌 상태로 돌아감..
 
+                    # 게임에서 이긴 경우
                     elif hasWon(revealedBoxes):
                         gameWonAnimation(mainBoard)
                         pygame.time.wait(1000)
 
+                        # 상자들을 다시 섞고 전체가 닫힌 상자 리스트를 다시 만듦.
                         mainBoard = getRandomizedBoard()
                         revealedBoxes = generateRevealedBoxesData(False)
 
@@ -91,18 +94,20 @@ def main():
 
                         startGameAnimation(mainBoard)
                         # pygame.mixer.music.play(-5,0.0)
+
                     firstSelection = None
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+# 상자들이 모두 열린 경우 -> 승리!!
 def hasWon(revealedBoxes):
     for i in revealedBoxes:
-        if False in i:
+        if False in i: # 하나라도 닫혀있으면 False반환
             return False
     return True
 
-def generateRevealedBoxesData(val): # 열린 상자 만들기
+def generateRevealedBoxesData(val): # 열리거나 닫힌(val에 따라 달라짐) 상자 리스트 만들기
     revealedBoxes = []
     
     for i in range(BOARDWIDTH):
@@ -115,8 +120,8 @@ def getRandomizedBoard(): # 카드 섞기
 
     for pic in pics:
         for num in range(1,2):
-            cards.append((pic,num))
-    random.shuffle(cards)
+            cards.append((pic,num)) # (사진이름, 1), (사진이름, 2) 이런 형태로 각 사진과 번호를 튜플로 묶어 같은 사진을 두 개씩 card 리스트에 넣음
+    random.shuffle(cards) # 카드 섞기
     numCardsUsed = int(BOARDWIDTH * BOARDHEIGHT / 2)
     cards = cards[:numCardsUsed]*2
     random.shuffle(cards)
@@ -132,27 +137,30 @@ def getRandomizedBoard(): # 카드 섞기
 
     return board
 
+# 상자list의 요소들을 groupSize씩 또 list로 묶어 2차원이 되도록 함
 def splitIntoGroupsOf(groupSize, theList):
     result = []
     for i in range(0, len(theList), groupSize):
         result.append(theList[i:i+groupSize])
     return result
 
-def leftTopCoordsOfBox(boxx, boxy):
-    left = boxx*(BOXSIZE + GAPSIZE) + XMARGIN
+def leftTopCoordsOfBox(boxx, boxy): # boxx, boxy는 각각 0~3사이의 값이 들어감
+    # 해당 박스의 왼쪽상단의 좌표를 가져옴
+    left = boxx*(BOXSIZE + GAPSIZE) + XMARGIN 
     top = boxy*(BOXSIZE + GAPSIZE) + YMARGIN
-
     return left, top
 
-def getBoxAtPixel(x, y):
+def getBoxAtPixel(x, y): # x, y는 마우스 클릭 좌표
     for boxx in range(BOARDWIDTH):
         for boxy in range(BOARDHEIGHT):
             left, top = leftTopCoordsOfBox(boxx, boxy)
             boxRect = pygame.Rect(left, top, BOXSIZE, BOXSIZE)
-            if boxRect.collidepoint(x, y):
-                return (boxx, boxy)
-    return (None, None)
+            if boxRect.collidepoint(x, y): # 클릭 좌표가 박스 안에 있으면 True 아니면 False 반환
+                return (boxx, boxy) # 16개의 상자중 클릭좌표에 해당하는 상자가 있으면 그 상자의 인덱스 반환
+    return (None, None) # 해당하는 상자가 없는 경우 None을 반환
 
+
+# pic에 해당하는 사진을 boxx, boxy 자리에 배치
 def drawCard(pic, num, boxx, boxy):
     quarter = int(BOXSIZE * 0.25)
     half = int(BOXSIZE * 0.5)
@@ -189,6 +197,7 @@ def drawCard(pic, num, boxx, boxy):
 def getPicAndNum(board, boxx, boxy):
     return board[boxx][boxy][0], board[boxx][boxy][1]
 
+# 해당 상자의 위치에 점점 커지거나 작아지는 사각형(Rect)을 그려 덮개를 여닫음
 def drawBoxCovers(board, boxes, coverage):
     for box in boxes:
         left, top = leftTopCoordsOfBox(box[0], box[1])
@@ -202,25 +211,27 @@ def drawBoxCovers(board, boxes, coverage):
     pygame.display.update()
     FPSCLOCK.tick(FPS)
 
-# 상자 열림
+# 박스 덮개 열림
+# 박스의 오른쪽 끝에서부터 REVEALSPEED만큼씩 덮개가 줄어들어 열리게 됨
 def revealBoxesAnimation(board, boxesToReveal):
-    for coverage in range(BOXSIZE, (-REVEALSPEED) -1, -REVEALSPEED):
+    for coverage in range(BOXSIZE, -1, -REVEALSPEED):
         drawBoxCovers(board, boxesToReveal, coverage)
 
 # 상자 닫힘
+# 박스의 왼쪽 끝에서부터 BOXSIZE까지 REVEALSPEED로 덮개가 생겨 덮히게 됨
 def coverBoxesAnimation(board, boxesToCover):
-    for coverage in range(0, BOXSIZE + REVEALSPEED, REVEALSPEED):
+    for coverage in range(0, BOXSIZE + 1, REVEALSPEED):
         drawBoxCovers(board, boxesToCover, coverage)
 
 def drawBoard(board, revealed):
     for boxx in range(BOARDWIDTH):
         for boxy in range(BOARDHEIGHT):
             left, top = leftTopCoordsOfBox(boxx, boxy)
-            if not revealed[boxx][boxy]:
+            if not revealed[boxx][boxy]: # 해당 박스의 커버가 열려있으면..(False가 아니면)
                 pygame.draw.rect(DISPLAYSURF, BOXSIZE, (left, top, BOXSIZE, BOXSIZE))
-            else:
-                pic, num = getPicAndNum(board, boxx, boxy)
-                drawCard(pic, num, boxx, boxy)
+            else: # 해당 박스의 커버가 닫혀 있으면..(False라면)
+                pic, num = getPicAndNum(board, boxx, boxy) # 튜플형태의 사진, 번호를 추출
+                drawCard(pic, num, boxx, boxy) # (boxx, boxy)자리에 pic에 해당하는 사진을 배치
 
 def drawHighlightBox(boxx, boxy):
     left, top = leftTopCoordsOfBox(boxx, boxy)
@@ -228,19 +239,23 @@ def drawHighlightBox(boxx, boxy):
 
 def startGameAnimation(board):
     coveredBoxes = generateRevealedBoxesData(False)
+
     boxes = []
     for x in range(BOARDWIDTH):
         for y in range(BOARDHEIGHT):
-            boxes.append((x, y))
+            boxes.append((x, y)) # (0,0)~(4,4)
     random.shuffle(boxes)
-    boxlist = random.sample(boxes, 4)
-    boxGroups = splitIntoGroupsOf(1, boxlist)
+    boxlist = random.sample(boxes, 4) # 게임 시작 전 보여줄 4개의 상자 랜덤하게 선택(힌트)
+    boxGroups = splitIntoGroupsOf(1, boxlist) # 선정된 상자list의 요소 하나하나를 또 list로 묶어 2차원으로 만듦.
+                                              # 아래 for문안의 함수들에 전달되는 인자(인수)들은 list형태가 되어야하기 때문
     drawBoard(board, coveredBoxes)
 
+    # 선정된 4개의 상자들을 순서대로 보여줬다가 숨김
     for boxGroup in boxGroups:
         revealBoxesAnimation(board, boxGroup)
         coverBoxesAnimation(board, boxGroup)
 
+# 게임에서 이겼을 때..
 def gameWonAnimation(board):
     coveredBoxes = generateRevealedBoxesData(True)
     global BOXSIZE
