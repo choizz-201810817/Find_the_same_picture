@@ -3,6 +3,7 @@ import random, pygame, sys, cx_Freeze
 from PIL import Image
 from pygame.locals import *
 from multiprocessing import Queue
+import time
 
 FPS = 30
 WINDOWWIDTH = 800
@@ -22,9 +23,54 @@ YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * (BOXSIZE + GAPSIZE)))/2)
 
 pics = ['bts', 'rm', 'jin', 'suga', 'jhope', 'jimin', 'v', 'jk']
 
-# %%
+
+#%%
+
+class Button:  # 버튼
+    def __init__(self, img_in, x, y, width, height, img_act, x_act, y_act, action=None):
+        mouse = pygame.mouse.get_pos()  # 마우스 좌표
+        click = pygame.mouse.get_pressed()  # 클릭여부
+        if x + width > mouse[0] > x and y + height > mouse[1] > y:  # 마우스가 버튼안에 있을 때
+            DISPLAYSURF.blit(img_act, (x_act, y_act))  # 버튼 이미지 변경
+            if click[0] and action is not None:  # 마우스가 버튼안에서 클릭되었을 때
+                time.sleep(0.2)
+                action()
+        else:
+            DISPLAYSURF.blit(img_in, (x, y))
+            
+def mainmenu():
+    global BOARDWIDTH, BOARDHEIGHT, FPSCLOCK, DISPLAYSURF
+    FPSCLOCK = pygame.time.Clock()
+
+    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    
+    pygame.display.set_caption('BTS FIND')
+    pygame.display.set_icon(pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\bts_logo.png'))
+    
+    backImg = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\purple_back.png')
+    main_pic = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\main_img.png')
+    mainmenu_start = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\start.png")
+    mainmenu_finish = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\finish.png")
+    mainmenu_start_click = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\start_click.png")
+    mainmenu_finish_click = pygame.image.load(r"C:\sbbigdata\Find_the_same_picture\data\img\finish_click.png")
+    
+    menu = True
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        DISPLAYSURF.blit(backImg, (0, 0))
+        DISPLAYSURF.blit(main_pic, (105, 50))
+        Button(mainmenu_start, 320, 370, 150, 80, mainmenu_start_click, 300, 355, main)
+        Button(mainmenu_finish, 320, 450, 150, 80, mainmenu_finish_click, 300, 435, finishgame)
+
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
 def main():
-    global FPSCLOCK, DISPLAYSURF
+    global FPSCLOCK, DISPLAYSURF, BOARDWIDTH, BOARDHEIGHT
     pygame.init()
     pygame.mixer.init()
     pygame.mixer.music.load(r"C:\sbbigdata\Find_the_same_picture\data\fire.wav")
@@ -103,12 +149,15 @@ def main():
                         mainBoard = getRandomizedBoard()
                         revealedBoxes = generateRevealedBoxesData(False)
 
+                        DISPLAYSURF.blit(backImg, (0,0))
                         drawBoard(mainBoard, revealedBoxes)
                         pygame.display.update()
                         pygame.time.wait(1000)
 
                         startGameAnimation(mainBoard)
                         # pygame.mixer.music.play(-5,0.0)
+                        DISPLAYSURF.blit(timer, (((WINDOWWIDTH/2) - 30), 10))
+                        pygame.display.flip()
 
                     firstSelection = None
 
@@ -199,7 +248,7 @@ def drawCard(pic, num, boxx, boxy):
         DISPLAYSURF.blit(pic4, (left, top))
     elif pic == 'jhope':
         DISPLAYSURF.blit(pic5, (left, top))
-    elif pic == 'jmin':
+    elif pic == 'jimin':
         DISPLAYSURF.blit(pic6, (left, top))
     elif pic == 'v':
         DISPLAYSURF.blit(pic7, (left, top))
@@ -277,11 +326,16 @@ def gameWonAnimation(board):
 
     pic0 = pygame.image.load(r'C:\sbbigdata\Find_the_same_picture\data\img\stars.png')
 
-    screen = pygame.display.set_mode(size)
+
+    # screen = pygame.display.set_mode(size)
     # color1 = LIGHTBGCOLOR
     # color2 = BGCOLOR
 
+def finishgame():
+    pygame.quit()
+    sys.exit()
+
 # %%
 if __name__ == '__main__':
-    main()
+    mainmenu()
 # %%
